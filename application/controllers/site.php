@@ -914,10 +914,10 @@ $elements[0]->sort="1";
 $elements[0]->header="id";
 $elements[0]->alias="id";
 $elements[1]=new stdClass();
-$elements[1]->field="`tingblog_gif`.`name`";
+$elements[1]->field="`tingblog_gif`.`image`";
 $elements[1]->sort="1";
-$elements[1]->header="name";
-$elements[1]->alias="name";
+$elements[1]->header="image";
+$elements[1]->alias="image";
 $search=$this->input->get_post("search");
 $pageno=$this->input->get_post("pageno");
 $orderby=$this->input->get_post("orderby");
@@ -948,7 +948,7 @@ public function creategifsubmit()
 {
 $access=array("1");
 $this->checkaccess($access);
-$this->form_validation->set_rules("name","name","trim");
+$this->form_validation->set_rules("image","image","trim");
 if($this->form_validation->run()==FALSE)
 {
 $data["alerterror"]=validation_errors();
@@ -959,8 +959,40 @@ $this->load->view("template",$data);
 else
 {
 $id=$this->input->get_post("id");
-$name=$this->input->get_post("name");
-if($this->gif_model->create($name)==0)
+$config['upload_path'] = './uploads/';
+		 $config['allowed_types'] = 'gif|jpg|png|jpeg';
+		 $this->load->library('upload', $config);
+		 $filename="image";
+		 $image="";
+		 if (  $this->upload->do_upload($filename))
+		 {
+			 $uploaddata = $this->upload->data();
+			 $image=$uploaddata['file_name'];
+
+							 $config_r['source_image']   = './uploads/' . $uploaddata['file_name'];
+							 $config_r['maintain_ratio'] = TRUE;
+							 $config_t['create_thumb'] = FALSE;///add this
+							 // $config_r['width']   = 800;
+							 // $config_r['height'] = 800;
+							 $config_r['quality']    = 100;
+							 //end of configs
+							 $this->load->library('image_lib', $config_r);
+							 $this->image_lib->initialize($config_r);
+							 if(!$this->image_lib->resize())
+							 {
+									 echo "Failed." . $this->image_lib->display_errors();
+									 //return false;
+							 }
+							 else
+							 {
+									 //print_r($this->image_lib->dest_image);
+									 //dest_image
+									 $image=$this->image_lib->dest_image;
+									 //return false;
+							 }
+
+		 }
+if($this->gif_model->create($image)==0)
 $data["alerterror"]="New gif could not be created.";
 else
 $data["alertsuccess"]="gif created Successfully.";

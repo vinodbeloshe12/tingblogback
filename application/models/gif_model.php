@@ -5,7 +5,7 @@ class gif_model extends CI_Model
 {
 public function create($name)
 {
-$data=array("name" => $name);
+$data=array("image" => $image);
 $query=$this->db->insert( "tingblog_gif", $data );
 $id=$this->db->insert_id();
 if(!$query)
@@ -48,7 +48,7 @@ return $query;
 }
 public function getdropdown()
 {
-$query=$this->db->query("SELECT * FROM `tingblog_gif` ORDER BY `id` 
+$query=$this->db->query("SELECT * FROM `tingblog_gif` ORDER BY `id`
                     ASC")->row();
 $return=array(
 "" => "Select Option"
