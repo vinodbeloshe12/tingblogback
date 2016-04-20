@@ -1,5 +1,5 @@
 <?php if ( ! defined("BASEPATH")) exit("No direct script access allowed");
-class Json extends CI_Controller 
+class Json extends CI_Controller
 {function getallblog()
 {
 $elements=array();
@@ -135,4 +135,32 @@ $id=$this->input->get_post("id");
 $data["message"]=$this->gif_model->getsinglegif($id);
 $this->load->view("json",$data);
 }
+
+function getallarticle()
+{
+$this->chintantable->createelement("`tingblog_blog`.`id`", '1', "ID", "id");
+$this->chintantable->createelement("`tingblog_blog`.`name`", '1', "title", "title");
+$this->chintantable->createelement("`tingblog_blog`.`image`", '0', "image", "image");
+$this->chintantable->createelement("`tingblog_blog`.`video`", '0', "video", "video");
+$this->chintantable->createelement("`tingblog_blog`.`timestamp`", '1', "timestamp", "timestamp");
+$this->chintantable->createelement("`tingblog_blog`.`description`", '0', "content", "content");
+$this->chintantable->createelement("group_concat(`tingblog_tags`.`name` separator ',')", '0', "tags", "tags");
+$search=$this->input->get_post("search");
+$pageno=$this->input->get_post("pageno");
+$orderby=$this->input->get_post("orderby");
+$orderorder=$this->input->get_post("orderorder");
+$maxrow=$this->input->get_post("maxrow");
+if($maxrow=="")
+{
+$maxrow=  20;
+}
+if($orderby=="")
+{
+$orderby="id";
+$orderorder="ASC";
+}
+$data["message"]=$this->chintantable->query($pageno,$maxrow,$orderby,$orderorder,$search,$elements,"FROM `tingblog_blog` LEFT OUTER JOIN `tagsblog` ON `tingblog_blog`.`id` = `tagsblog`.`blog` LEFT OUTER JOIN `tingblog_tags` ON `tingblog_tags`.`id` = `tagsblog`.`tag`","","GROUP BY `tingblog_blog`.`id`");
+$this->load->view("json",$data);
+}
+
 } ?>
